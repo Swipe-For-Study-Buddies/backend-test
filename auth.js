@@ -132,26 +132,9 @@ const resetPassword = async function ({ req, res, db }) {
   }
 }
 
-// NOTE: 測試用的, 後端無須實作
-const me = async function ({ req, res, db }) {
-  const { email } = req.user
-  try {
-    const data = await db.get(email)
-    const jsonData = JSON.parse(data)
-    const { salt, passwordHash, ...userData } = jsonData
-    return res.json(userData)
-  } catch (err) {
-    if (err.type === 'NotFoundError') {
-      return res.status(401).send({ message: 'UnauthorizedError' });
-    }
-  }
-}
-
 module.exports = {
   register,
   login,
   getResetPasswordToken,
   resetPassword,
-  me
 }
-

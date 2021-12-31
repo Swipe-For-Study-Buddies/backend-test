@@ -6,10 +6,12 @@ const {
   register,
   login,
   getResetPasswordToken,
-  verifyResetPasswordToken,
   resetPassword,
-  me
 } = require('./auth.js')
+const {
+  getUserProfile,
+  setUserProfile,
+} = require('./user.js')
 
 const db = level('db')
 const app = express();
@@ -56,8 +58,12 @@ app.post('/api/auth/verifyResetPasswordToken', async (req, res) => {
   return resetPassword({req, res, db})
 });
 
-app.get('/api/auth/me', async (req, res) => {
-  return me({req, res, db})
+app.get('/api/user/getUserProfile', async (req, res) => {
+  return getUserProfile({req, res, db})
+});
+
+app.post('/api/user/setUserProfile', async (req, res) => {
+  return setUserProfile({req, res, db})
 });
 
 app.get('*', (req, res) => {
