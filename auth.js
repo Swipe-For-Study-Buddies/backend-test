@@ -33,14 +33,16 @@ const register = async function ({ req, res, db }) {
 
   // 要先確認這個 email 沒有註冊過
   let emailExist = true
-  db.get(email, (err, data) => {
+  try {
+    await db.get(email)
+  } catch (err) {
     if (err && err.type === 'NotFoundError') {
       emailExist = false
     }
-  })
+  }
 
   if (emailExist) {
-    return res.status(400).send({ message: 'account already exist' })
+    return res.status(400).send({ message: 'AccountAlreadyExist' })
   }
 
   const { salt, passwordHash } = saltHashPassword(password);
