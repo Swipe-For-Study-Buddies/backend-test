@@ -17,7 +17,7 @@ const setUserProfile = async function ({ req, res, db }) {
   const {
     name = '',
     gender = '',
-    age = 0,
+    birthday = '',
     job = '',
     interest = [],
     skill = [],
@@ -28,21 +28,23 @@ const setUserProfile = async function ({ req, res, db }) {
   try {
     const data = await db.get(email)
     const jsonData = JSON.parse(data)
-    const { salt, passwordHash, rpToken, rptExpired, ...userData } = jsonData
 
-    await db.put(email, JSON.stringify({
-      ...userData,
+    const userData = {
+      ...jsonData,
       name,
       gender,
-      age,
+      birthday,
       job,
       interest,
       skill,
       wantingToLearn,
       contacts,
-    }))
+    }
+    await db.put(email, JSON.stringify(userData))
 
-    return res.status(200).send({ message: 'OK' });
+    const { salt, passwordHash, rpToken, rptExpired, ...newUserData } = userData
+
+    return res.status(200).send(newUserData);
   } catch (err) {
     if (err.type === 'NotFoundError') {
       return res.status(401).send({ message: 'UserNotFound' });
