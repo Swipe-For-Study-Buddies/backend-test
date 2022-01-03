@@ -28,6 +28,7 @@ app.use(expressJWT({
     '/api/auth/getResetPasswordToken',
     '/api/auth/resetPassword',
     '/api/auth/verifyResetPasswordToken',
+    { url: /^\/image\/.*/, methods: ['GET'] } // 測試用, 暫時先允許
   ]
 }))
 app.use((err, req, res, next) => {
@@ -65,6 +66,8 @@ app.get('/api/user/getUserProfile', async (req, res) => {
 app.post('/api/user/setUserProfile', async (req, res) => {
   return setUserProfile({req, res, db})
 });
+
+app.use('/image', express.static(__dirname + '/images'));
 
 app.get('*', (req, res) => {
   res.status(404).send()
