@@ -46,13 +46,50 @@ const register = async function ({ req, res, db }) {
   }
 
   const { salt, passwordHash } = saltHashPassword(password);
-  await db.put(email, JSON.stringify({ salt, passwordHash }))
-  // NOTE: 此處應該不要直接給出 JWT, 應該先寄一個啟用帳號連結的 email
-  //       但是因為這只是一個測試串接用的後端, 所以就不在這邊實作這一段
 
-  // 產生 JWT, 丟回 clent 端
-  const token = getToken(email)
-  return res.json({ token })
+  const acToken = genRandomString(16)
+  const actExpired = Date.now() + 60 * 60 * 24 * 2 * 1000 // 2天過期
+  const hash = encrypt(`${email}:${acToken}`);
+  // NOTE: 此處應該寄一封 email 給使用者, 附上啟用帳號的連結
+  //       目前先把連結印出來手動在瀏覽器輸入
+  console.log('Click this URL:')
+  console.log(`http://localhost:3000/activateAccount/${hash}`)
+
+  await db.put(email, JSON.stringify({ salt, passwordHash, acToken, actExpired }))
+  return res.status(200).send({ message: 'OK' });
+}
+
+const activateAccount = async function ({ req, res, db }) {
+  const { token } = req.body
+  const content = decrypt(token)
+  console.log('content = ', content)
+
+  const s = content.split(':')
+  if (s.length !== 2) {
+    return res.status(400).send({ message: 'InvalidToken' });
+  } else {
+    const email = s[0]
+    const acToken = s[1]
+
+    try {
+      const data = await db.get(email)
+      const jsonData = JSON.parse(data)
+      const { acToken: acTokenInDb, actExpired, ...userData } = jsonData
+      // 把收到的 acToken 和資料庫裡的 token 比對, 並確認 token 尚未過期
+      if (acToken !== acTokenInDb) {
+        return res.status(400).send({ message: 'InvalidToken' });
+      } else if (acTokenInDb < Date.now()) {
+        return res.status(400).send({ message: 'TokenExpired' });
+      }
+      // 移除 db 裡的 acToken
+      await db.put(email, JSON.stringify({ ...userData}))
+
+      return res.status(200).send({ message: 'OK' });
+    } catch (err) {
+      console.log(err)
+      return res.status(400).send({ message: 'InvalidToken' });
+    }
+  }
 }
 
 const login = async function ({ req, res, db }) {
@@ -60,7 +97,10 @@ const login = async function ({ req, res, db }) {
   try {
     const data = await db.get(email)
     const jsonData = JSON.parse(data)
-    const { salt, passwordHash, ...userData } = jsonData
+    const { acToken, salt, passwordHash, ...userData } = jsonData
+    if (acToken) {
+      return res.status(400).send({ message: 'NotActivatedAccount' });
+    }
     const passwordHashFromClient = sha512(password, salt);
     if (passwordHash === passwordHashFromClient) {
       const token = getToken(email)
@@ -81,6 +121,12 @@ const getResetPasswordToken = async function ({ req, res, db }) {
   try {
     const data = await db.get(email)
     const jsonData = JSON.parse(data)
+    console.log(JSON.stringify(jsonData, null, 4))
+    const { acToken } = jsonData
+    // 如果帳號還沒啟用, 不可以重設密碼
+    if (acToken) {
+      return res.status(400).send({ message: 'NotActivatedAccount' });
+    }
     const rpToken = genRandomString(16)
     const rptExpired = Date.now() + 60 * 60 * 24 * 2 * 1000 // 2天過期
     await db.put(email, JSON.stringify({ ...jsonData, rpToken, rptExpired }))
@@ -88,6 +134,7 @@ const getResetPasswordToken = async function ({ req, res, db }) {
     const hash = encrypt(`${email}:${rpToken}`);
     // NOTE: 此處應該寄一封 email 給使用者, 附上重設密碼用的連結
     //       目前先把連結印出來手動在瀏覽器輸入
+    console.log('Click this URL:')
     console.log(`http://localhost:3000/resetPassword/${hash}`)
     return res.status(200).send({ message: 'OK' });
   } catch (err) {
@@ -134,6 +181,7 @@ const resetPassword = async function ({ req, res, db }) {
 
 module.exports = {
   register,
+  activateAccount,
   login,
   getResetPasswordToken,
   resetPassword,

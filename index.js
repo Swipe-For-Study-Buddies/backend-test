@@ -4,6 +4,7 @@ const expressJWT = require('express-jwt')
 const level = require('level')
 const {
   register,
+  activateAccount,
   login,
   getResetPasswordToken,
   resetPassword,
@@ -24,6 +25,7 @@ app.use(expressJWT({
 }).unless({
   path: [
     '/api/auth/register',
+    '/api/auth/activateAccount',
     '/api/auth/login',
     '/api/auth/getResetPasswordToken',
     '/api/auth/resetPassword',
@@ -41,6 +43,10 @@ app.use((err, req, res, next) => {
 
 app.post('/api/auth/register', async (req, res) => {
   return register({req, res, db})
+});
+
+app.post('/api/auth/activateAccount', async (req, res) => {
+  return activateAccount({req, res, db})
 });
 
 app.post('/api/auth/login', async (req, res) => {
