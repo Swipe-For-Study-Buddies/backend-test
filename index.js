@@ -12,6 +12,10 @@ const {
 const {
   getUserProfile,
   setUserProfile,
+  getSuggestions,
+  approveSuggestion,
+  rejectSuggestion,
+  getNotifications,
 } = require('./user.js')
 
 const db = level('db')
@@ -71,6 +75,22 @@ app.get('/api/user/getUserProfile', async (req, res) => {
 
 app.post('/api/user/setUserProfile', async (req, res) => {
   return setUserProfile({req, res, db})
+});
+
+app.get('/api/user/getSuggestions', async (req, res) => {
+  return getSuggestions({req, res, db})
+});
+
+app.post('/api/user/approveSuggestion', async (req, res) => {
+  return approveSuggestion({req, res, db})
+});
+
+app.post('/api/user/rejectSuggestion', async (req, res) => {
+  return rejectSuggestion({req, res, db})
+});
+
+app.get('/api/user/getNotifications', async (req, res) => {
+  return getNotifications({req, res, db})
 });
 
 app.use('/image', express.static(__dirname + '/images'));
