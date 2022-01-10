@@ -104,7 +104,7 @@ const login = async function ({ req, res, db }) {
     const passwordHashFromClient = sha512(password, salt);
     if (passwordHash === passwordHashFromClient) {
       const token = getToken(email)
-      return res.json({ ...userData, token })
+      return res.json({ ...userData, access: token })
     } else {
       return res.status(401).send({ message: 'WrongPassword' });
     }

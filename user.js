@@ -1,6 +1,53 @@
 const crypto = require('crypto')
 const fs = require("fs");
 
+const mockData =[
+  {
+    id: '7c64cc320316c6c3017d5e1c7f', // 此 id 必須是之後 backend 可以靠這個 id 得知選取的 user 是誰, 但又不可在雙方同意前將 email 送到 client 端.
+    name: 'AAA',
+    gender: 'male',
+    age: '30',
+    job: '',
+    interest: ['養魚', '逛街', '健身'],
+    skill: ['養魚', '烹飪'],
+    wantingToLearn: ['英文', '日文'],
+    avatar: '',
+  },
+  {
+    id: '7f67cf320316c6c3017d5e1c7f',
+    name: 'BBB',
+    gender: 'female',
+    age: '22',
+    job: '',
+    interest: ['看電影', '逛街', '旅行'],
+    skill: ['中文', '英文', '日文'],
+    wantingToLearn: ['Javascript', 'Python'],
+    avatar: '',
+  },
+  {
+    id: '7e66ce320316c6c3017d5e1c7f',
+    name: 'CCC',
+    gender: 'male',
+    age: '27',
+    job: '',
+    interest: ['爬山', '看書'],
+    skill: ['中文'],
+    wantingToLearn: ['養魚', '烹飪'],
+    avatar: '',
+  },
+  {
+    id: '7961c9320316c6c3017d5e1c7f',
+    name: 'DDD',
+    gender: 'female',
+    age: '31',
+    job: '',
+    interest: ['旅行', '逛街'],
+    skill: ['英文', '日文'],
+    wantingToLearn: ['烹飪'],
+    avatar: '',
+  },
+];
+
 const getUserProfile = async function ({ req, res, db }) {
   const { email } = req.user
   try {
@@ -78,63 +125,19 @@ const setUserProfile = async function ({ req, res, db }) {
 }
 
 const getSuggestions = async function ({ req, res, db }) {
-
-  const mockData =[
-    {
-      id: '7c64cc320316c6c3017d5e1c7f', // 此 id 必須是之後 backend 可以靠這個 id 得知選取的 user 是誰, 但又不可在雙方同意前將 email 送到 client 端.
-      name: 'AAA',
-      gender: 'male',
-      age: '30',
-      job: '',
-      interest: ['養魚', '逛街', '健身'],
-      skill: ['養魚', '烹飪'],
-      wantingToLearn: ['英文', '日文'],
-      avatar: '',
-    },
-    {
-      id: '7f67cf320316c6c3017d5e1c7f',
-      name: 'BBB',
-      gender: 'female',
-      age: '22',
-      job: '',
-      interest: ['看電影', '逛街', '旅行'],
-      skill: ['中文', '英文', '日文'],
-      wantingToLearn: ['Javascript', 'Python'],
-      avatar: '',
-    },
-    {
-      id: '7e66ce320316c6c3017d5e1c7f',
-      name: 'CCC',
-      gender: 'male',
-      age: '27',
-      job: '',
-      interest: ['爬山', '看書'],
-      skill: ['中文'],
-      wantingToLearn: ['養魚', '烹飪'],
-      avatar: '',
-    },
-    {
-      id: '7961c9320316c6c3017d5e1c7f',
-      name: 'DDD',
-      gender: 'female',
-      age: '31',
-      job: '',
-      interest: ['旅行', '逛街'],
-      skill: ['英文', '日文'],
-      wantingToLearn: ['烹飪'],
-      avatar: '',
-    },
-  ];
   return res.json(mockData)
 }
 
 const approveSuggestion = async function ({ req, res, db }) {
+  return res.status(200).send({ message: 'OK' });
 }
 
 const rejectSuggestion = async function ({ req, res, db }) {
+  return res.status(200).send({ message: 'OK' });
 }
 
 const getNotifications = async function ({ req, res, db }) {
+  return res.json(mockData)
 }
 
 module.exports = {
