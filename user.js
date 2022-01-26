@@ -140,6 +140,14 @@ const getNotifications = async function ({ req, res, db }) {
   return res.json(mockData)
 }
 
+const sendFeedback = async function ({ req, res, db }) {
+  return res.status(200).send({ message: 'OK' });
+}
+
+const modifyPassword = async function ({ req, res, db }) {
+  return res.status(200).send({ message: 'OK' });
+}
+
 module.exports = {
   getUserProfile,
   setUserProfile,
@@ -147,4 +155,6 @@ module.exports = {
   approveSuggestion,
   rejectSuggestion,
   getNotifications,
+  sendFeedback,
+  modifyPassword
 }

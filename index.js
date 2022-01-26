@@ -16,6 +16,8 @@ const {
   approveSuggestion,
   rejectSuggestion,
   getNotifications,
+  sendFeedback,
+  modifyPassword
 } = require('./user.js')
 
 const db = level('db')
@@ -91,6 +93,14 @@ app.post('/api/user/rejectSuggestion', async (req, res) => {
 
 app.get('/api/user/getNotifications', async (req, res) => {
   return getNotifications({req, res, db})
+});
+
+app.post('/api/user/sendFeedback', async (req, res) => {
+  return sendFeedback({req, res, db})
+});
+
+app.post('/api/user/modifyPassword', async (req, res) => {
+  return modifyPassword({req, res, db})
 });
 
 app.use('/image', express.static(__dirname + '/images'));
